@@ -1,0 +1,778 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="apk,task,进程,process,android,安卓," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="原文 http://wenzongliang.iteye.com/blog/1264592
+一个apk(就是一个包)一般占一个dalvik，一个进程。（可以设置一个apk占多个进程，多个apk占一个进程）一个task可有占多个进程（相当于装了多个应用（一个应用跳转另一个应用Acitivity就是这种情况））。
+
+task是一个activity的栈，其中”可能”含有来自多个App的activity。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="apk,task,进程的区别">
+<meta property="og:url" content="http://renyawen.com/2016/04/21/apk-task-进程的区别/index.html">
+<meta property="og:site_name" content="油豆腐">
+<meta property="og:description" content="原文 http://wenzongliang.iteye.com/blog/1264592
+一个apk(就是一个包)一般占一个dalvik，一个进程。（可以设置一个apk占多个进程，多个apk占一个进程）一个task可有占多个进程（相当于装了多个应用（一个应用跳转另一个应用Acitivity就是这种情况））。
+
+task是一个activity的栈，其中”可能”含有来自多个App的activity。">
+<meta property="og:updated_time" content="2016-04-20T19:24:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="apk,task,进程的区别">
+<meta name="twitter:description" content="原文 http://wenzongliang.iteye.com/blog/1264592
+一个apk(就是一个包)一般占一个dalvik，一个进程。（可以设置一个apk占多个进程，多个apk占一个进程）一个task可有占多个进程（相当于装了多个应用（一个应用跳转另一个应用Acitivity就是这种情况））。
+
+task是一个activity的栈，其中”可能”含有来自多个App的activity。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 6275673474946041000,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> apk,task,进程的区别 | 油豆腐 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="http://s6.cnzz.com/stat.php?id=1258716446&web_id=1258716446" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">油豆腐</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">油豆腐换新锅了</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', '61M7NxU8gEceKb5psgQM','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                apk,task,进程的区别
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-21T02:59:10+08:00" content="2016-04-21">
+              2016-04-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/21/apk-task-进程的区别/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/21/apk-task-进程的区别/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>原文 <a href="http://wenzongliang.iteye.com/blog/1264592" target="_blank" rel="external">http://wenzongliang.iteye.com/blog/1264592</a></p>
+<font color="red">一个apk(就是一个包)一般占一个dalvik，一个进程。（可以设置一个apk占多个进程，多个apk占一个进程）<br>一个task可有占多个进程（相当于装了多个应用（一个应用跳转另一个应用Acitivity就是这种情况））。</font>
+
+<p>task是一个activity的栈，其中”可能”含有来自多个App的activity。</p>
+<p>默认情况下，同一个应用程序中的所有组件运行在同一个进程中，而且绝大多数的应用程序也都是这样的。但是，如果我们想要控制让某个特定的组件属于某个进程，我们可以在manifest文件中进行配置。<br><a id="more"></a></p>
+<p>在每种组件元素（activity、service、receiver、provider）的manifest条目中，都支持一个 “android:process”的属性，通过这个属性，我们可以指定某个组件运行的进程。我们可以通过设置这个属性，让每个组件运行在它自己的进程中，也可以只让某些组件共享一个进程。我们要可以通过设置“android:process”属性，让不同应用程序中的组件运行在相同的进程中，这些应用程序共享相同的Linux用户ID，拥有相同的证书。</p>
+<p><application>元素也有一个“android:process”属性，可以设置一个应用于全部组件的默认值。 </application></p>
+<p>当可用内存数量低，而一些与用户即时交互的进程又需要内存时，Android随时可能会终止某个进程。运行在被终止的进程中的组件会因此被销毁，但是，当再次需要这些组件工作时，就会再启动一个进程。 </p>
+<p>在决定要终止哪个进程时，Android系统会权衡它们对于用户的重要性。例如，相较于运行可见activities的进程，终止一个运行不可见activities的进程会更加合理。是否终止一个进程，依赖于运行在这个进程中的组件的状态。 </p>
+<p>如果不能将两个activity放入同一个application中的话，可以通过在各自的manifest中设置以下属性，让这两个activity强制运行在同一个进程中，从而可以充分利用进程内共享的资源，减少内存占用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//（1）设置相同的User Id：  </span></span><br><span class="line">&lt;manifest android:sharedUserId=<span class="string">"aaa.bbb"</span>  /&gt;</span><br><span class="line"><span class="comment">//（2）被调用的activity设置以下属性：  </span></span><br><span class="line">&lt;activity android:multiprocess=<span class="string">"true"</span>  /&gt;</span><br><span class="line"><span class="comment">//或者  </span></span><br><span class="line">&lt;activity android:process=<span class="string">"com.cienet.test"</span>  /&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="同一Apk中的同一包中的Activity调用时进程状况验证"><a href="#同一Apk中的同一包中的Activity调用时进程状况验证" class="headerlink" title="同一Apk中的同一包中的Activity调用时进程状况验证"></a>同一Apk中的同一包中的Activity调用时进程状况验证</h4><ol>
+<li>创建Project：<br>project name: FirstProject<br>package:com.demo<br>默认Activity:MainActivity </li>
+<li>添加一个新的Activity：<br>name:SecondActivity </li>
+<li>修改布局。在MainActivity布局中添加一个Button，当点击此Button时启动SecondActivity。在SecondActivity的布局中放置一个Textview，以证明SecondActivity已启动。 </li>
+<li>运行程序，查看此Ap进程情况：<br>USER：app_36  PID：8360  NAME：com.demo<br>点击按钮，启动SecondActivity，再次查看进程情况：<br>USER：app_36  PID：8360  NAME：com.demo<br><strong>进程列表没有变化，两个Activity运行在同一进程中。 </strong></li>
+</ol>
+<h4 id="同一Apk中的不同包的Activity调用时进程状况验证"><a href="#同一Apk中的不同包的Activity调用时进程状况验证" class="headerlink" title="同一Apk中的不同包的Activity调用时进程状况验证"></a>同一Apk中的不同包的Activity调用时进程状况验证</h4><ol>
+<li>将SecondActivity挪到包com.demo.second中去，相应修改AndroidManifest.xml中的name为：com.demo.second.SecondActivity </li>
+<li>运行程序，查看此时进程情况：<br>USER：app_36  PID：10593  NAME：com.demo </li>
+<li>点击按钮启动SecondActivity，查看此时进程情况：<br>USER：app_36  PID：10593  NAME：com.demo<br><strong>进程列表没有变化，两个Activity运行在同一进程中。即进程name只受AndroidManifest.xml中manifset结点的package属性影响。 </strong></li>
+</ol>
+<h4 id="同一Apk中Activity-process属性修改后进程状况验证"><a href="#同一Apk中Activity-process属性修改后进程状况验证" class="headerlink" title="同一Apk中Activity process属性修改后进程状况验证"></a>同一Apk中Activity process属性修改后进程状况验证</h4><ol>
+<li>为SecondActivity添加process属性，其值为”:abc”，也可以随便是其他的<code>:</code>开头的字符串，常见的是<code>:remote</code>： </li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"com.demo.second.SecondActivity"</span> <span class="attr">android:process</span>=<span class="string">":abc"</span>&gt;</span><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>运行程序，查看进程情况：<br>USER：app_36  PID：12137  NAME：com.demo </li>
+<li>点击按钮，启动SecondActivity，查看进程情况：<br>USER：app_36  PID：12137  NAME：com.demo<br>USER：app_36  PID：12303  NAME：com.demo:abc<br><strong>进程表多了一项。两个Activity各自有一个进程，SecondActivity的进程名称为 包名+后缀 </strong></li>
+</ol>
+<h4 id="不同Apk中不同包名的Activity进程状况验证"><a href="#不同Apk中不同包名的Activity进程状况验证" class="headerlink" title="不同Apk中不同包名的Activity进程状况验证"></a>不同Apk中不同包名的Activity进程状况验证</h4><ol>
+<li>运行FirstProject：<br>USER：app_36  PID：12137  NAME：com.demo </li>
+<li>创建SecondProject：<br>project name: SecondProject<br>package:com.demo2<br>默认Activity:MainActivity </li>
+<li>运行SecondProject：<br>USER：app_37  PID：14191  NAME：com.demo2<br><strong>进程表多了一项。两个Activity各自有一个进程，同时其进程用户名、包名也不同，互不影响。 </strong></li>
+</ol>
+<h4 id="不同Apk，签名相同、包名相同的Activity进程状况验证"><a href="#不同Apk，签名相同、包名相同的Activity进程状况验证" class="headerlink" title="不同Apk，签名相同、包名相同的Activity进程状况验证"></a>不同Apk，签名相同、包名相同的Activity进程状况验证</h4><ol>
+<li>修改SecondProject的包也为com.demo，相应要修改AndroidManifest.xml内容。 </li>
+<li>运行SecondProject，查看进程情况：<br>USER：app_36  PID：14944  NAME：com.demo<br><strong>进程表只有一项，但是实际上FirstProject此时已经被覆盖了，系统中只存在SecondProject了，因为模拟器调试时apk使用的签名key都是一样的，系统看到key一样，包名一样认为这个包就是FirstProject所以覆盖掉了。<br>可以通过DDMS复制/data/system/packages.xml查看一下内容。 </strong></li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.demo"</span> <span class="attr">codePath</span>=<span class="string">"/data/app/com.demo.apk"</span> <span class="attr">system</span>=<span class="string">"false"</span> <span class="attr">ts</span>=<span class="string">"1279955425000"</span> <span class="attr">version</span>=<span class="string">"1"</span> <span class="attr">userId</span>=<span class="string">"10036"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>   <strong>这个文件里面，package name都是唯一的，同时可以看到用户名是通过userId来决定的。</strong></p>
+<h4 id="不同Apk，签名不相同，包名相同的Activity进程状况验证"><a href="#不同Apk，签名不相同，包名相同的Activity进程状况验证" class="headerlink" title="不同Apk，签名不相同，包名相同的Activity进程状况验证"></a>不同Apk，签名不相同，包名相同的Activity进程状况验证</h4><ol>
+<li>在Eclipse的Package Explorer导航树中选中FirstProject，点右键。 </li>
+<li>Android tools–&gt;Export Signed Application Package，按照向导创建一个用指定key签名的apk包。 </li>
+<li>同样导出Second Project。 </li>
+<li>切换窗口到模拟器，按Home键–&gt;按Menu键–&gt;设置–&gt;应用程序–&gt;管理应用程序–&gt;SecondProject–&gt;卸载。这是为了用命令行安装做准备。 </li>
+<li>启动一个命令行窗口，执行adb install firstproject.apk,会提示成功安装。 </li>
+<li>执行adb install secondproject.apk，提示安装失败。<br><strong>默认的Apk其安装时会分配新的UserId，即此时FirstProject以及SecondProject的UserId可以认为是不同的。<br>包名不同，则签名key是否相同无所谓，两个apk都可以安装。【第4个实验】<br>包名相同时，签名key相同则会覆盖【第5个实验】；签名不同则第二个apk安装会失败。【第6个实验】 </strong></li>
+</ol>
+<h4 id="不同Apk，Share-User-Id相同，包名不同时进程情况分析"><a href="#不同Apk，Share-User-Id相同，包名不同时进程情况分析" class="headerlink" title="不同Apk，Share User Id相同，包名不同时进程情况分析"></a>不同Apk，Share User Id相同，包名不同时进程情况分析</h4><ol>
+<li><p>修改firstproject、secondproject的AndroidManifest.xml的manifset结点，增加属性<br>Xml代码   收藏代码<br>android:sharedUserId=”com.demouser”  </p>
+</li>
+<li><p>修改secondproject的包为com.demo2，不然其会覆盖firsetproject。 </p>
+</li>
+<li>运行firsetproject、secondproject，查看进程列表：<br>USER：app_35  PID：19993  NAME：com.demo2<br>USER：app_35  PID：20045  NAME：com.demo2<br>仍然存在两个进程。进程的用户名一样，说明shareUserId确实有效了，但是进程名字一个不一样。<br>再次导出/data/system/packages.xml，查看其内容： </li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.demo"</span> <span class="attr">codePath</span>=<span class="string">"/data/app/com.demo.apk"</span> <span class="attr">system</span>=<span class="string">"false"</span> <span class="attr">ts</span>=<span class="string">"1279957484000"</span> <span class="attr">version</span>=<span class="string">"1"</span> <span class="attr">sharedUserId</span>=<span class="string">"10035"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.demo2"</span> <span class="attr">codePath</span>=<span class="string">"/data/app/com.demo2.apk"</span> <span class="attr">system</span>=<span class="string">"false"</span> <span class="attr">ts</span>=<span class="string">"1279957473000"</span> <span class="attr">version</span>=<span class="string">"1"</span> <span class="attr">sharedUserId</span>=<span class="string">"10035"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到两个项目的UserId都是10035，确实是一样的。 </p>
+<h4 id="不同Apk，Share-User-Id相同，包名不同、指定Activity的process属性进程情况分析"><a href="#不同Apk，Share-User-Id相同，包名不同、指定Activity的process属性进程情况分析" class="headerlink" title="不同Apk，Share User Id相同，包名不同、指定Activity的process属性进程情况分析"></a>不同Apk，Share User Id相同，包名不同、指定Activity的process属性进程情况分析</h4><ol>
+<li>修改SecondProject的MainActivity的process属性，指定绑定到进程名为com.demo的进程上： </li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>  </span><br><span class="line">                  <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> <span class="attr">android:process</span>=<span class="string">"com.demo"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>运行firstProject、SecondProject，查看进程情况：<br> USER：app_35  PID：21387  NAME：com.demo<br> <strong>两个Activity运行于同一个进程。 </strong></li>
+</ol>
+<h4 id="不同Apk，Share-User-Id相同，包名不同、签名key不同"><a href="#不同Apk，Share-User-Id相同，包名不同、签名key不同" class="headerlink" title="不同Apk，Share User Id相同，包名不同、签名key不同"></a>不同Apk，Share User Id相同，包名不同、签名key不同</h4><p>经实验，安装第二个apk时会提示INSTALL_FAILED_UPDATE_INCOMPATIBLE错误，安装失败。 </p>
+<p><strong>总结：<br>UserId不同时：<br>      包名不同：未设定process属性时，各自的Activity在各自的进程。<br>                即使process指定了包名，也不会和另一个用户的同名包共享进程。<br>      包名相同：<br>                签名相同：覆盖旧的同包名apk。<br>                签名不同：新的apk会安装失败。【签名key一般都是不同的】<br>UserId相同时：<br>      包名不同：未设定process属性时，各自的Activity在各自的进程。<br>                process属性指定，则可以共享进程。<br>      包名相同：<br>                签名相同：覆盖旧的同包名apk。<br>                签名不同：新的apk会安装失败。【签名key一般都是不同的】</strong></p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/apk/" rel="tag">#apk</a>
+          
+            <a href="/tags/task/" rel="tag">#task</a>
+          
+            <a href="/tags/进程/" rel="tag">#进程</a>
+          
+            <a href="/tags/process/" rel="tag">#process</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/安卓/" rel="tag">#安卓</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/21/ConcurrencyProgram3ThreadABC/" rel="next" title="三个线程循环打印ABC10次的几种解决方法">
+                <i class="fa fa-chevron-left"></i> 三个线程循环打印ABC10次的几种解决方法
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/22/ManifestoforAgileSoftwareDevelopment/" rel="prev" title="敏捷开发宣言">
+                敏捷开发宣言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/21/apk-task-进程的区别/"
+           data-title="apk,task,进程的区别" data-url="http://renyawen.com/2016/04/21/apk-task-进程的区别/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Wuli Taotao" />
+          <p class="site-author-name" itemprop="name">Wuli Taotao</p>
+          <p class="site-description motion-element" itemprop="description">无与伦比,为杰沉伦,我大Wuli滔滔表情最屌!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#同一Apk中的同一包中的Activity调用时进程状况验证"><span class="nav-number">1.</span> <span class="nav-text">同一Apk中的同一包中的Activity调用时进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同一Apk中的不同包的Activity调用时进程状况验证"><span class="nav-number">2.</span> <span class="nav-text">同一Apk中的不同包的Activity调用时进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同一Apk中Activity-process属性修改后进程状况验证"><span class="nav-number">3.</span> <span class="nav-text">同一Apk中Activity process属性修改后进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk中不同包名的Activity进程状况验证"><span class="nav-number">4.</span> <span class="nav-text">不同Apk中不同包名的Activity进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk，签名相同、包名相同的Activity进程状况验证"><span class="nav-number">5.</span> <span class="nav-text">不同Apk，签名相同、包名相同的Activity进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk，签名不相同，包名相同的Activity进程状况验证"><span class="nav-number">6.</span> <span class="nav-text">不同Apk，签名不相同，包名相同的Activity进程状况验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk，Share-User-Id相同，包名不同时进程情况分析"><span class="nav-number">7.</span> <span class="nav-text">不同Apk，Share User Id相同，包名不同时进程情况分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk，Share-User-Id相同，包名不同、指定Activity的process属性进程情况分析"><span class="nav-number">8.</span> <span class="nav-text">不同Apk，Share User Id相同，包名不同、指定Activity的process属性进程情况分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同Apk，Share-User-Id相同，包名不同、签名key不同"><span class="nav-number">9.</span> <span class="nav-text">不同Apk，Share User Id相同，包名不同、签名key不同</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wuli Taotao</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"nicolesayo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js"></script>
+    
+  
+
+
+
+
+
+  
+  
+  
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  </script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+  
+
+  
+
+</body>
+</html>
